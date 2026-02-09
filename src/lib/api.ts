@@ -2,97 +2,121 @@
  * @Author       : Chr_
  * @Date         : 2026-01-07 22:08:29
  * @LastEditors  : Chr_
- * @LastEditTime : 2026-01-09 15:22:32
- * @Description  : 
+ * @LastEditTime : 2026-02-09 14:39:04
+ * @Description  :
  */
 
-import type { ImportBotsPayload } from './models/ImportBotsPayload';
+import { ipcPassword } from '$lib/stores/tabStore';
+import { get } from 'svelte/store';
 import type { IpcBasicResponse } from './models/IpcBasicResponse';
-import type { IpcGetBotsResponse } from './models/IpcGetBotListResponse';
-import type { IpcImportBotsResponse } from './models/IpcImportBotsResponse';
+import type { IpcGetBotsCountryCodeResponse as GetBotsCountryCodeResponse } from './models/bot/GetBotsCountryCodeResponse';
+import type { IpcGetBotsResponse as GetBotsResponse } from './models/bot/GetBotsResponse';
+import type { AddCartRequest } from './models/cart/AddCartRequest';
+import type { ExternalPurchaseResponse } from './models/cart/ExternalPurchaseResponse';
 
-async function baseRequest<T>(
-	method: string = 'GET',
-	uri: string = '',
-	ipcPassword?: string
-): Promise<T> {
+async function baseRequest<T>(method: string = 'GET', uri: string = ''): Promise<T> {
+	const ipcPwd = get(ipcPassword);
 	const response = await fetch(uri, {
 		method,
 		headers: {
 			'Content-Type': 'application/json',
-			...(ipcPassword ? { Authentication: ipcPassword } : {})
+			...(ipcPwd ? { Authentication: ipcPwd } : {})
 		}
 	});
-	const data = await response.json() as Promise<T>;
+	const data = (await response.json()) as Promise<T>;
 	return data;
 }
 
-async function basePayloadRequest<T,V>(
+async function basePayloadRequest<T, V>(
 	method: string = 'POST',
 	uri: string = '',
-	payload: V,
-	ipcPassword?: string
+	payload: V
 ): Promise<T> {
+	const ipcPwd = get(ipcPassword);
 	const response = await fetch(uri, {
 		method,
 		headers: {
 			'Content-Type': 'application/json',
-			...(ipcPassword ? { Authentication: ipcPassword } : {})
+			...(ipcPwd ? { Authentication: ipcPwd } : {})
 		},
-		body:  JSON.stringify(payload) ,
+		body: JSON.stringify(payload)
 	});
-	const data = await response.json() as  Promise<T>;
+	const data = (await response.json()) as Promise<T>;
 	return data;
 }
 
-export async function getBotList(
-	botNames: string = 'ASF',
-	ipcPassword?: string
-): Promise<IpcGetBotsResponse> {
-	const response = await baseRequest<IpcGetBotsResponse>(
-		'GET',
-		`/Api/Import/GetBotList/${botNames}`,
-		ipcPassword
-	);
+export async function getBotList(botNames: string = 'ASF'): Promise<GetBotsResponse> {
+	const response = await baseRequest<GetBotsResponse>('GET', `/Api/Bot/${botNames}`);
 	return response;
 }
 
-export async function importBots(
-	payload: ImportBotsPayload[],
-	allowReplace: boolean = false,
-	ipcPassword?: string
-): Promise<IpcImportBotsResponse> {
-	const response = await basePayloadRequest<IpcImportBotsResponse,ImportBotsPayload[]>(
+export async function startBots(botNames: string = 'ASF'): Promise<IpcBasicResponse> {
+	const response = await baseRequest<IpcBasicResponse>('POST', `/Api/Bot/${botNames}/start`);
+	return response;
+}
+
+export async function stopBots(botNames: string = 'ASF'): Promise<IpcBasicResponse> {
+	const response = await baseRequest<IpcBasicResponse>('POST', `/Api/Bot/${botNames}/stop`);
+	return response;
+}
+
+export async function getCountryCode(
+	botNames: string = 'ASF'
+): Promise<GetBotsCountryCodeResponse> {
+	const response = await baseRequest<GetBotsCountryCodeResponse>(
 		'POST',
-		`/Api/Import/ImportBots?allowReplace=${allowReplace}`,
-		payload,
-		ipcPassword
+		`/Api/Cart/GetCountryCode/${botNames}`
 	);
 	return response;
 }
 
-export async function startBots(
+export async function cancelPayment(
+	botName: string,
+	transId: string
+): Promise<ExternalPurchaseResponse> {
+	const response = await baseRequest<ExternalPurchaseResponse>(
+		'POST',
+		`/Api/Cart/CancelPayment/${botName}?transId=${transId}`
+	);
+	return response;
+}
+
+export async function purchaseTransRegion(
+	botName: string,
+	countryCode: string,
+	payment: string
+): Promise<ExternalPurchaseResponse> {
+	const response = await baseRequest<ExternalPurchaseResponse>(
+		'POST',
+		`/Api/Cart/PurchaseTransRegion/${botName}?countryCode=${countryCode}&payment=${payment}`
+	);
+	return response;
+}
+
+export async function purchaseExternal(
+	botName: string,
+	payment: string
+): Promise<ExternalPurchaseResponse> {
+	const response = await baseRequest<ExternalPurchaseResponse>(
+		'POST',
+		`/Api/Cart/PurchaseExternal/${botName}?payment=${payment}`
+	);
+	return response;
+}
+
+export async function clearCart(botNames: string = 'ASF'): Promise<IpcBasicResponse> {
+	const response = await baseRequest<IpcBasicResponse>('POST', `/Api/Cart/ClearCart/${botNames}`);
+	return response;
+}
+
+export async function addCart(
 	botNames: string = 'ASF',
-	ipcPassword?: string
+	items: AddCartRequest
 ): Promise<IpcBasicResponse> {
-	const response = await baseRequest<IpcBasicResponse>(
+	const response = await basePayloadRequest<IpcBasicResponse, AddCartRequest>(
 		'POST',
-		`/Api/Bot/${botNames}/start`,
-		ipcPassword
+		`/Api/Cart/AddCart/${botNames}`,
+		items
 	);
 	return response;
 }
-
-export async function stopBots(
-	botNames: string = 'ASF',
-	ipcPassword?: string
-): Promise<IpcBasicResponse> {
-	const response = await baseRequest<IpcBasicResponse>(
-		'POST',
-		`/Api/Bot/${botNames}/stop`,
-		ipcPassword
-	);
-	return response;
-}
-
-

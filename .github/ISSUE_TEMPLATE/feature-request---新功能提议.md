@@ -1,9 +1,9 @@
 ---
 name: Feature request / 新功能提议
 about: I want new command / 我需要新的功能
-title: ""
+title: ''
 labels: enhancement
-assignees: ""
+assignees: ''
 ---
 
 **Describe what feature you want / 描述需要加入的新功能**

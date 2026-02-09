@@ -1,55 +1,48 @@
 <script lang="ts">
-  import { browser } from '$app/environment';
-  import { Input } from 'flowbite-svelte';
-  import { EyeOutline, EyeSlashOutline } from 'flowbite-svelte-icons';
-  import { onMount } from 'svelte';
-  interface Props {
-    id?: string;
-    value: string;
-    placeholder?: string | null;
-    saveKey?: string | null;
-  }
+	import { browser } from '$app/environment';
+	import { ipcPassword } from '$lib/stores/tabStore';
+	import { Input } from 'flowbite-svelte';
+	import { EyeOutline, EyeSlashOutline } from 'flowbite-svelte-icons';
 
-  let { id, value = $bindable(), placeholder, saveKey }: Props = $props();
+	interface Props {
+		id?: string;
+		placeholder?: string | null;
+		saveKey?: string | null;
+	}
 
-  let showPassword: boolean = $state(false);
+	let { id, placeholder, saveKey }: Props = $props();
+	let value: string = $state($ipcPassword);
+	let showPassword: boolean = $state(false);
 
-  onMount(() => {
-    if (browser && saveKey) {
-      const saved = localStorage.getItem(saveKey);
-      if (saved) {
-        value = saved;
-      }
-    }
-  });
+	function saveSettings() {
+		$ipcPassword = value;
+		if (browser && saveKey) {
+			localStorage.setItem(saveKey, value);
+		}
+	}
 
-  function saveSettings() {
-    if (browser && saveKey) {
-      localStorage.setItem(saveKey, value);
-    }
-  }
-
-  function switchShowPassword() {
-    showPassword = !showPassword;
-  }
+	function switchShowPassword() {
+		showPassword = !showPassword;
+	}
 </script>
 
 <Input
-  {id}
-  type={showPassword ? 'text' : 'password'}
-  {placeholder}
-  bind:value
-  clearable
-  class="pl-10"
-  oninput={saveSettings}
+	{id}
+	type={showPassword ? 'text' : 'password'}
+	{placeholder}
+	bind:value
+	clearable
+	class="pl-10"
+	oninput={saveSettings}
+	onchange={() => console.log(value)}
 >
-  {#snippet left()}
-    <button onclick={switchShowPassword} class="pointer-events-auto">
-      {#if showPassword}
-        <EyeSlashOutline class="h-6 w-6" />
-      {:else}
-        <EyeOutline class="h-6 w-6" />
-      {/if}
-    </button>
-  {/snippet}
+	{#snippet left()}
+		<button onclick={switchShowPassword} class="pointer-events-auto">
+			{#if showPassword}
+				<EyeSlashOutline class="h-6 w-6" />
+			{:else}
+				<EyeOutline class="h-6 w-6" />
+			{/if}
+		</button>
+	{/snippet}
 </Input>

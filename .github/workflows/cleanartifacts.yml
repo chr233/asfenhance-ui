@@ -2,7 +2,7 @@ name: cleanartifacts
 
 on:
   schedule:
-    - cron: "0 1 * * *"
+    - cron: '0 1 * * *'
   workflow_dispatch:
 
 permissions:
@@ -17,4 +17,4 @@ jobs:
       - name: Remove old artifacts
         uses: c-hive/gha-remove-artifacts@v1
         with:
-          age: "1 seconds"
+          age: '1 seconds'

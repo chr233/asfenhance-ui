@@ -1,9 +1,9 @@
 ---
 name: Bug report / 错误汇报
 about: If you need help / 如果你需要帮助
-title: ""
+title: ''
 labels: bug
-assignees: ""
+assignees: ''
 ---
 
 **Describe the bug / Bug 描述**

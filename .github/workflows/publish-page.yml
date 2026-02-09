@@ -3,7 +3,7 @@ name: publish-page
 on:
   push:
     tags:
-      - "*"
+      - '*'
 permissions:
   contents: write
   pages: write
@@ -14,7 +14,7 @@ env:
   PROJECT_NAME: asf-import-tools
   REPO_NAME: asf-import-tools
   BADGE_NAME: asf--import--tools
-  NODE_JS_VERSION: "lts/*"
+  NODE_JS_VERSION: 'lts/*'
 
 jobs:
   publish-ui:
@@ -59,7 +59,7 @@ jobs:
           publish_branch: gh-pages
           user_name: github-actions[bot]
           user_email: github-actions[bot]@users.noreply.github.com
-          commit_message: "Deploy site from GitHub Actions: ${{ github.sha }}"
+          commit_message: 'Deploy site from GitHub Actions: ${{ github.sha }}'
 
   release:
     needs: publish-ui
@@ -78,7 +78,7 @@ jobs:
       - name: Create ${{ env.PROJECT_NAME }} GitHub release
         uses: ncipollo/release-action@v1.20.0
         with:
-          artifacts: "out/*"
+          artifacts: 'out/*'
           makeLatest: true
           tag: ${{ github.ref_name }}
           name: ${{ env.PROJECT_NAME }} ${{ github.ref_name }}

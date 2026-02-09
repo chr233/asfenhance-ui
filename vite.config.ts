@@ -3,16 +3,18 @@ import tailwindcss from '@tailwindcss/vite';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
 
+const REVERSE_PROXY_HOST = 'http://100.105.249.10:2500';
+
 export default defineConfig({
 	plugins: [tailwindcss(), sveltekit(), devtoolsJson()],
 
 	server: {
-		host: "0.0.0.0",
-		port: 8645,
+		host: '0.0.0.0',
+		port: 8845,
 
 		proxy: {
-			'/Api': { target: 'http://100.105.249.10:2500' },
-			'/swagger': { target: 'http://100.105.249.10:2500' }
+			'/Api': { target: REVERSE_PROXY_HOST },
+			'/swagger': { target: REVERSE_PROXY_HOST }
 		}
 	}
 });
