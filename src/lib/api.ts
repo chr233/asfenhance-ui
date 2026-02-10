@@ -2,7 +2,7 @@
  * @Author       : Chr_
  * @Date         : 2026-01-07 22:08:29
  * @LastEditors  : Chr_
- * @LastEditTime : 2026-02-09 14:39:04
+ * @LastEditTime : 2026-02-10 16:19:17
  * @Description  :
  */
 
@@ -13,6 +13,7 @@ import type { IpcGetBotsCountryCodeResponse as GetBotsCountryCodeResponse } from
 import type { IpcGetBotsResponse as GetBotsResponse } from './models/bot/GetBotsResponse';
 import type { AddCartRequest } from './models/cart/AddCartRequest';
 import type { ExternalPurchaseResponse } from './models/cart/ExternalPurchaseResponse';
+import type { InternalPurchaseResponse } from './models/cart/InternalPurchaseResponse';
 
 async function baseRequest<T>(method: string = 'GET', uri: string = ''): Promise<T> {
 	const ipcPwd = get(ipcPassword);
@@ -103,6 +104,15 @@ export async function purchaseExternal(
 	);
 	return response;
 }
+
+export async function purchaseInternal(botNames: string = 'ASF'): Promise<InternalPurchaseResponse> {
+	const response = await baseRequest<InternalPurchaseResponse>(
+		'POST',
+		`/Api/Cart/PurchaseInternal/${botNames}`
+	);
+	return response;
+}
+
 
 export async function clearCart(botNames: string = 'ASF'): Promise<IpcBasicResponse> {
 	const response = await baseRequest<IpcBasicResponse>('POST', `/Api/Cart/ClearCart/${botNames}`);

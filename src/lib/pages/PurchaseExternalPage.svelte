@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { addCart, clearCart, getBotList, getCountryCode, purchaseTransRegion } from '$lib/api';
+	import { addCart, clearCart, getBotList, purchaseExternal } from '$lib/api';
 	import type { BotDetail } from '$lib/models/bot/GetBotsResponse';
 
 	import { browser } from '$app/environment';
@@ -42,21 +42,6 @@
 		}
 	});
 	let selectedBot: BotDetail | undefined = $state();
-
-	let countryCodeList: Record<string, string> = $state({});
-	let countryCodeItems = $derived.by(() => {
-		const entries = Object.entries(countryCodeList ?? {});
-		const items = entries
-			.filter((x) => x[0] !== 'help')
-			.map(([key, value]) => ({ name: value, value: key }));
-
-		if (!items || items.length === 0) {
-			return [];
-		} else {
-			return items;
-		}
-	});
-	let selectedCountryCode: string | undefined = $state();
 
 	let purchaseHistory: PurchaseResult[] = $state([]);
 
@@ -112,50 +97,6 @@
 
 			if (botSelectorItems.length > 0) {
 				selectedBot = botSelectorItems.find((x) => !x.disabled)?.value || undefined;
-			}
-		} catch (err) {
-			console.error(err);
-		} finally {
-			ipcLoading = false;
-		}
-	}
-
-	// 刷新国家代码
-	async function reloadBotsCountryCode() {
-		const bot = selectedBot?.BotName;
-
-		if (!bot) {
-			countryCodeList = {};
-			return;
-		}
-
-		selectedCountryCode = undefined;
-
-		try {
-			ipcLoading = true;
-
-			ipcMessage = '';
-
-			const response = await getCountryCode(bot);
-
-			if (!response.Success) {
-				console.log(response.Message);
-
-				ipcMessage = response.Message;
-
-				return;
-			}
-
-			for (const botName in response.Result) {
-				if (botName === bot) {
-					countryCodeList = response.Result[botName].rgUserCountryOptions;
-					break;
-				}
-			}
-
-			const entries = Object.entries(countryCodeList ?? {}).filter(([k]) => k !== 'help');
-			if (entries.length > 0) {
-				selectedCountryCode = entries[0][0];
 			}
 		} catch (err) {
 			console.error(err);
@@ -243,10 +184,10 @@
 	// 下单
 	async function purchase() {
 		const bot = selectedBot?.BotName;
-		const code = selectedCountryCode;
 		const payment = selectedPayment;
 
-		if (!bot || !code || !payment) {
+		if (!bot || !payment) {
+			alert('请选择机器人和支付方式');
 			return;
 		}
 
@@ -255,7 +196,7 @@
 
 			ipcMessage = '';
 
-			const response = await purchaseTransRegion(bot, code, payment);
+			const response = await purchaseExternal(bot, payment);
 
 			if (!response.Success) {
 				console.log(response.Message);
@@ -294,28 +235,6 @@
 		/>
 		<Button color="light" onclick={reloadBots} loading={ipcLoading}>
 			<RefreshOutline class="w-4 h-4" />
-		</Button>
-	</div>
-
-	<LabelFor forId="country" text="国家代码" />
-	<div class="gap-3 flex">
-		{#each countryCodeItems as country}
-			<Radio
-				id="country"
-				bind:group={selectedCountryCode}
-				disabled={ipcLoading}
-				value={country.value}
-			>
-				{country.name}
-			</Radio>
-		{/each}
-		<Button
-			color="light"
-			onclick={reloadBotsCountryCode}
-			disabled={!selectedBot}
-			loading={ipcLoading}
-		>
-			获取可用国家
 		</Button>
 	</div>
 
@@ -383,12 +302,8 @@
 						{:else}
 							<TableBodyCell>{history.TransId}</TableBodyCell>
 							<TableBodyCell>
-								<div class="gap-3 flex">
-									<Button size="xs" color="light" target="_blank" href={history.PaymentUrl}
-										>前往支付</Button
-									>
-									<Tooltip type="auto" placement="bottom">{history.PaymentUrl}</Tooltip>
-								</div>
+								<Button size="xs" href={history.PaymentUrl}>前往支付</Button>
+								<Tooltip type="auto" placement="bottom">{history.PaymentUrl}</Tooltip>
 							</TableBodyCell>
 						{/if}
 					</TableBodyRow>

@@ -141,7 +141,13 @@
 <div class="space-y-4 mx-auto h-full w-full">
 	<LabelFor forId="botList" text="机器人" />
 	<div class="gap-3 flex">
-		<Select id="botList" bind:value={selectedBot} items={botSelectorItems} clearable />
+		<Select
+			id="botList"
+			bind:value={selectedBot}
+			items={botSelectorItems}
+			placeholder="选择在线机器人"
+			clearable
+		/>
 		<Button onclick={reloadBots} loading={ipcLoading}>
 			<RefreshOutline class="w-4 h-4" />
 		</Button>

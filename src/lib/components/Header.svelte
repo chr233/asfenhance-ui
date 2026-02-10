@@ -61,10 +61,6 @@
 		showIpcPassword = true;
 	}
 
-	function onCloseSetting() {
-		showIpcPassword = false;
-	}
-
 	onMount(() => {
 		if (!browser) {
 			return;
@@ -185,8 +181,6 @@
 		<form class="space-y-4 text-gray-800 dark:text-gray-100 mx-auto h-full w-full">
 			<LabelFor forId="ipc" text={$_('botListPage.ipcPassword')} />
 			<PasswordInput id="ipc" saveKey={IPC_PASSWORD_KEY} />
-
-			<Button onclick={onCloseSetting}>关闭</Button>
 		</form>
 	</Drawer>
 </div>

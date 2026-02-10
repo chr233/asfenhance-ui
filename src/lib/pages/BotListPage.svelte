@@ -130,7 +130,7 @@
 				<TableBodyRow>
 					<TableBodyCell colspan={6}>
 						{#if ipcLoading}
-							<Skeleton size="md" class="my-8" />
+							<Skeleton size="md" />
 						{:else if botsList.length === 0}
 							<Alert color="red">
 								{#snippet icon()}
@@ -173,6 +173,7 @@
 							{#if bot.IsConnectedAndLoggedOn}
 								<Button
 									size="xs"
+									color="light"
 									onclick={() => {
 										startOrStopBot(bot.BotName, false);
 									}}
@@ -182,6 +183,7 @@
 							{:else}
 								<Button
 									size="xs"
+									color="light"
 									onclick={() => {
 										startOrStopBot(bot.BotName, true);
 									}}
