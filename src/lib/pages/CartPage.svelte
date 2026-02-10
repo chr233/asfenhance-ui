@@ -4,7 +4,7 @@
 
 	import { browser } from '$app/environment';
 	import LabelFor from '$lib/components/LabelFor.svelte';
-	import { Button, Radio, Select } from 'flowbite-svelte';
+	import { Button, Card, Radio, Select } from 'flowbite-svelte';
 	import { RefreshOutline } from 'flowbite-svelte-icons';
 	import { onMount } from 'svelte';
 
@@ -144,26 +144,7 @@
 		</Button>
 	</div>
 
-	<LabelFor forId="country" text="国家代码" />
-	<div class="gap-3 flex">
-		{#each countryCodeItems as country (country.value)}
-			<Radio id="country" bind:group={selectedCountryCode} value={country.value}>
-				{country.name}
-			</Radio>
-		{/each}
-		<Button onclick={reloadBotsCountryCode} disabled={!selectedBot} loading={ipcLoading}>
-			获取可用国家
-		</Button>
-	</div>
-
-	<LabelFor forId="payment" text="支付方式" />
-	<div class="gap-3 flex">
-		{#each paymentItems as payment (payment.value)}
-			<Radio id="payment" bind:group={selectedPayment} value={payment.value}>
-				{payment.name}
-			</Radio>
-		{/each}
-	</div>
+	<Card>ToDo</Card>
 
 	<Button
 		class="w-full"
