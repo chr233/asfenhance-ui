@@ -4,12 +4,10 @@
 
 	import { browser } from '$app/environment';
 	import LabelFor from '$lib/components/LabelFor.svelte';
-	import type { ExternalPurchaseResponse } from '$lib/models/cart/ExternalPurchaseResponse';
 	import { Button, Radio, Select } from 'flowbite-svelte';
 	import { RefreshOutline } from 'flowbite-svelte-icons';
 	import { onMount } from 'svelte';
 
-	let ipcMessage: string = $state('');
 	let ipcLoading: boolean = $state(true);
 
 	let botsList: BotDetail[] = $state([]);
@@ -42,8 +40,6 @@
 	});
 	let selectedCountryCode: string | undefined = $state();
 
-	let purchaseHistory: ExternalPurchaseResponse[] = $state([]);
-
 	const paymentItems = [
 		{ name: '支付宝', value: 'alipay' },
 		{ name: 'PaySafeCard', value: 'paysafe' }
@@ -55,15 +51,12 @@
 			ipcLoading = true;
 
 			botsList.length = 0;
-			ipcMessage = '';
 
 			const response = await getBotList('ASF');
 
 			if (!response.Success) {
 				console.log(response.Message);
-
-				ipcMessage = response.Message;
-
+				alert(response.Message);
 				return;
 			}
 
@@ -79,6 +72,7 @@
 			}
 		} catch (err) {
 			console.error(err);
+			alert(err);
 		} finally {
 			ipcLoading = false;
 		}
@@ -97,15 +91,11 @@
 		try {
 			ipcLoading = true;
 
-			ipcMessage = '';
-
 			const response = await getCountryCode(bot);
 
 			if (!response.Success) {
 				console.log(response.Message);
-
-				ipcMessage = response.Message;
-
+				alert(response.Message);
 				return;
 			}
 
@@ -122,6 +112,7 @@
 			}
 		} catch (err) {
 			console.error(err);
+			alert(err);
 		} finally {
 			ipcLoading = false;
 		}
@@ -155,7 +146,7 @@
 
 	<LabelFor forId="country" text="国家代码" />
 	<div class="gap-3 flex">
-		{#each countryCodeItems as country}
+		{#each countryCodeItems as country (country.value)}
 			<Radio id="country" bind:group={selectedCountryCode} value={country.value}>
 				{country.name}
 			</Radio>
@@ -167,7 +158,7 @@
 
 	<LabelFor forId="payment" text="支付方式" />
 	<div class="gap-3 flex">
-		{#each paymentItems as payment}
+		{#each paymentItems as payment (payment.value)}
 			<Radio id="payment" bind:group={selectedPayment} value={payment.value}>
 				{payment.name}
 			</Radio>

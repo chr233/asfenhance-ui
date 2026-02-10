@@ -34,7 +34,6 @@
 	clearable
 	class="pl-10"
 	oninput={saveSettings}
-	onchange={() => console.log(value)}
 >
 	{#snippet left()}
 		<button onclick={switchShowPassword} class="pointer-events-auto">

@@ -4,7 +4,6 @@
 	import { _ } from 'svelte-i18n';
 
 	import LabelFor from '$lib/components/LabelFor.svelte';
-	import { ipcPassword } from '$lib/stores/tabStore';
 	import { toBooleanString } from '$lib/utils';
 	import {
 		Alert,
@@ -47,15 +46,12 @@
 			ipcLoading = true;
 
 			botsList.length = 0;
-			ipcMessage = '';
 
 			const response = await getBotList('ASF');
 
 			if (!response.Success) {
 				console.log(response.Message);
-
-				ipcMessage = response.Message;
-
+				alert(response.Message);
 				return;
 			}
 
@@ -68,6 +64,7 @@
 
 			console.log(response);
 		} catch (err) {
+			alert(err);
 			console.error(err);
 		} finally {
 			ipcLoading = false;
@@ -97,7 +94,6 @@
 	onMount(() => {
 		setTimeout(() => {
 			reloadBots();
-			console.log($ipcPassword);
 		}, 1000);
 	});
 </script>
@@ -120,7 +116,7 @@
 			<TableHeadCell>{$_('botListPage.botName')}</TableHeadCell>
 			<TableHeadCell>{$_('botListPage.nickName')}</TableHeadCell>
 			<TableHeadCell>{$_('botListPage.steamId')}</TableHeadCell>
-			<TableHeadCell>{'在线'}</TableHeadCell>
+			<TableHeadCell>{$_('botListPage.online')}</TableHeadCell>
 			<TableHeadCell>{$_('botListPage.2fa')}</TableHeadCell>
 			<TableHeadCell>{$_('botListPage.operator')}</TableHeadCell>
 		</TableHead>
@@ -154,7 +150,7 @@
 					</TableBodyCell>
 				</TableBodyRow>
 			{:else}
-				{#each filteredBots as bot}
+				{#each filteredBots as bot (bot.BotName)}
 					<TableBodyRow>
 						<TableBodyCell>{bot.BotName}</TableBodyCell>
 

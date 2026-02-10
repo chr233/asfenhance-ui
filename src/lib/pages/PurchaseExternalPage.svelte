@@ -25,7 +25,6 @@
 	import { InfoCircleSolid, RefreshOutline } from 'flowbite-svelte-icons';
 	import { onDestroy, onMount } from 'svelte';
 
-	let ipcMessage: string = $state('');
 	let ipcLoading: boolean = $state(true);
 
 	let botsList: BotDetail[] = $state([]);
@@ -76,14 +75,12 @@
 			ipcLoading = true;
 
 			botsList.length = 0;
-			ipcMessage = '';
 
 			const response = await getBotList('ASF');
 
 			if (!response.Success) {
 				console.log(response.Message);
-
-				ipcMessage = response.Message;
+				alert(response.Message);
 
 				return;
 			}
@@ -126,14 +123,14 @@
 			if (line.trim() === '') {
 				continue;
 			}
-			const tmp = line.split('#')[0];
 
 			const match = line.match(regFull) ?? line.match(regShort);
 			if (!match) {
 				continue;
 			}
 
-			let [_, type, strId] = match;
+			let type = match[1];
+			const strId = match[2];
 			const itemId = parseInt(strId);
 			if (itemId !== itemId) {
 				continue;
@@ -163,14 +160,13 @@
 		try {
 			ipcLoading = true;
 
-			ipcMessage = '';
-
 			await clearCart(bot);
 
 			const response = await addCart(bot, { Items: cartItems });
 
 			if (!response.Success) {
 				console.log(response.Message);
+				alert(response.Message);
 
 				return;
 			}
@@ -194,8 +190,6 @@
 		try {
 			ipcLoading = true;
 
-			ipcMessage = '';
-
 			const response = await purchaseExternal(bot, payment);
 
 			if (!response.Success) {
@@ -216,6 +210,7 @@
 			}
 		} catch (err) {
 			console.error(err);
+			alert(err);
 		} finally {
 			ipcLoading = false;
 		}
@@ -240,7 +235,7 @@
 
 	<LabelFor forId="payment" text="支付方式" />
 	<div class="gap-3 flex">
-		{#each paymentItems as payment}
+		{#each paymentItems as payment (payment.value)}
 			<Radio id="payment" bind:group={selectedPayment} value={payment.value}>
 				{payment.name}
 			</Radio>
@@ -294,7 +289,7 @@
 					</TableBodyCell>
 				</TableBodyRow>
 			{:else}
-				{#each purchaseHistory as history}
+				{#each purchaseHistory as history, i (i)}
 					<TableBodyRow>
 						<TableBodyCell>{history.BotName}</TableBodyCell>
 						{#if !history.PaymentUrl}

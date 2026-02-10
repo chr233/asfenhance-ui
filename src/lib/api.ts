@@ -105,14 +105,15 @@ export async function purchaseExternal(
 	return response;
 }
 
-export async function purchaseInternal(botNames: string = 'ASF'): Promise<InternalPurchaseResponse> {
+export async function purchaseInternal(
+	botNames: string = 'ASF'
+): Promise<InternalPurchaseResponse> {
 	const response = await baseRequest<InternalPurchaseResponse>(
 		'POST',
 		`/Api/Cart/PurchaseInternal/${botNames}`
 	);
 	return response;
 }
-
 
 export async function clearCart(botNames: string = 'ASF'): Promise<IpcBasicResponse> {
 	const response = await baseRequest<IpcBasicResponse>('POST', `/Api/Cart/ClearCart/${botNames}`);

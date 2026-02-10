@@ -6,8 +6,6 @@
 	import '../app.css';
 	import type { LayoutLoad } from './$types';
 
-	let { children } = $props();
-
 	export const load: LayoutLoad = async () => {
 		if (browser) {
 			$locale = window.navigator.language.toLowerCase();
@@ -22,4 +20,4 @@
 	<title>{$pageTitle}</title>
 </svelte:head>
 
-{@render children?.()}
+<slot />
