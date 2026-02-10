@@ -19,7 +19,7 @@
 		"deploy": "gh-pages -d build"
 	},
 	"devDependencies": {
-		"@eslint/compat": "^2.0.1",
+		"@eslint/compat": "^2.0.2",
 		"@eslint/js": "^9.39.1",
 		"@sveltejs/adapter-static": "^3.0.10",
 		"@sveltejs/kit": "^2.49.1",
