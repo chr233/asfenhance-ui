@@ -1,7 +1,7 @@
 {
-	"name": "asfenhance-ipc-ui",
+	"name": "asfenhance-ui",
 	"private": true,
-	"version": "1.0.1",
+	"version": "1.0.0",
 	"author": "chr233",
 	"type": "module",
 	"description": "ASFEnhance UI",
